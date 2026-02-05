@@ -23,11 +23,17 @@ app = FastAPI(
 
 # Initialize the classifier
 try:
+    print("🔧 Initializing Simple Robust Classifier...")
     classifier = SimpleRobustClassifier(threshold=0.5)
+    print("🔧 Initializing Feature Extractor...")
     feature_extractor = FeatureExtractor()
     print("✅ AI Voice Detection API initialized successfully")
+    print(f"✅ Classifier loaded: {classifier.cnn_model is not None}")
+    print(f"✅ Feature extractor loaded: {feature_extractor is not None}")
 except Exception as e:
     print(f"⚠️ Warning: Could not initialize classifier: {e}")
+    import traceback
+    traceback.print_exc()
     classifier = None
     feature_extractor = None
 
@@ -189,19 +195,14 @@ async def detect_audio(request: DetectionRequest):
 
 def _fallback_classification():
     """Fallback classification when model is not available"""
-    import random
-    is_ai = random.choice([True, False])
-    confidence = random.uniform(0.6, 0.85)
-    
+    # Return consistent fallback result for debugging
     class FallbackResult:
         def __init__(self, label, confidence):
             self.label = label
             self.confidence = confidence
+            self.model_version = "fallback_v1.0"
     
-    return FallbackResult(
-        "ai_generated" if is_ai else "human",
-        confidence
-    )
+    return FallbackResult("human", 0.7)
 
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', '8000'))

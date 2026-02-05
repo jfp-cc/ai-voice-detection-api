@@ -8,6 +8,7 @@ from tensorflow import keras
 import json
 from typing import Optional, Dict
 from pathlib import Path
+from scipy import ndimage
 from features.audio_features import AudioFeatures
 from models.classification_result import ClassificationResult
 
@@ -39,10 +40,15 @@ class SimpleRobustClassifier:
         """Load the working simple robust CNN model"""
         try:
             model_path = Path("models/simple_robust_model.h5")
+            print(f"🔍 Looking for model at: {model_path.absolute()}")
+            print(f"🔍 Model file exists: {model_path.exists()}")
             
             if model_path.exists():
+                print(f"🔧 Loading TensorFlow model...")
                 self.cnn_model = keras.models.load_model(model_path)
                 print(f"✅ Loaded simple robust CNN model: {model_path}")
+                print(f"🔍 Model input shape: {self.cnn_model.input_shape}")
+                print(f"🔍 Model output shape: {self.cnn_model.output_shape}")
                 
                 # Load metadata if available
                 metadata_path = Path("models/simple_robust_metadata.json")
@@ -52,9 +58,13 @@ class SimpleRobustClassifier:
                     print(f"✅ Model metadata: {metadata.get('training_info', {}).get('balanced_accuracy', 'N/A')} balanced accuracy")
             else:
                 print(f"❌ Simple robust model not found at {model_path}")
+                print(f"🔍 Current working directory: {Path.cwd()}")
+                print(f"🔍 Files in models/: {list(Path('models').glob('*')) if Path('models').exists() else 'models/ not found'}")
                 
         except Exception as e:
             print(f"⚠️ Could not load simple robust model: {e}")
+            import traceback
+            traceback.print_exc()
     
     def _extract_features_for_model(self, features: AudioFeatures) -> np.ndarray:
         """Extract features compatible with the simple robust model (64x64)"""
@@ -118,8 +128,7 @@ class SimpleRobustClassifier:
         """Resize mel spectrogram to target dimensions"""
         current_mel_bins, current_time_steps = mel_spec.shape
         
-        # Simple resize using numpy interpolation
-        from scipy import ndimage
+        # Simple resize using scipy
         zoom_factors = (target_mel_bins / current_mel_bins, target_time_steps / current_time_steps)
         resized = ndimage.zoom(mel_spec, zoom_factors, order=1)
         

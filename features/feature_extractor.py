@@ -60,7 +60,7 @@ class FeatureExtractor:
             mel_spec = librosa.feature.melspectrogram(
                 y=y,
                 sr=self.sample_rate,
-                n_mels=64,  # Changed to 64 for simple robust model
+                n_mels=128,  # Changed back to 128 to match local
                 n_fft=2048,
                 hop_length=512,
                 fmax=8000

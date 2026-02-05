@@ -20,12 +20,12 @@ RUN pip install --no-cache-dir --index-url https://download.pytorch.org/whl/cpu 
     torch==2.10.0+cpu \
     torchaudio==2.10.0+cpu
 
-# Install other dependencies from PyPI
+# Install other dependencies from PyPI - UPDATED TENSORFLOW VERSION
 RUN pip install --no-cache-dir \
     fastapi==0.115.0 \
     "uvicorn[standard]==0.32.0" \
     python-multipart==0.0.12 \
-    tensorflow==2.15.0 \
+    tensorflow==2.20.0 \
     librosa==0.10.2 \
     soundfile==0.12.1 \
     numpy \
