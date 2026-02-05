@@ -2,7 +2,8 @@
 AI Voice Detection API for Railway GitHub Deployment
 Simple Robust Classifier v1.0 - 90% accuracy
 """
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends, Header
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel
 import uvicorn
 import os
@@ -20,6 +21,19 @@ app = FastAPI(
     description="Simple Robust Classifier v1.0 - 90% accuracy",
     version="1.0.0"
 )
+
+# API Key Authentication
+API_KEY = "sk-aivoice-2026-prod-7f8e9d2c1b4a6e5f3g8h9i0j1k2l3m4n5o6p7q8r9s0t1u2v3w4x5y6z"
+security = HTTPBearer()
+
+def verify_api_key(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Verify API key"""
+    if credentials.credentials != API_KEY:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid API key"
+        )
+    return credentials.credentials
 
 # Initialize the classifier
 try:
@@ -57,7 +71,9 @@ async def root():
         "model": "Simple Robust CNN - 90% accuracy",
         "docs": "/docs",
         "platform": "Railway via GitHub",
-        "classifier_status": "loaded" if classifier else "fallback"
+        "classifier_status": "loaded" if classifier else "fallback",
+        "authentication": "Bearer token required",
+        "endpoint": "/api/v1/detect"
     }
 
 @app.get("/health")
@@ -81,7 +97,7 @@ async def health_check_v1():
     }
 
 @app.post("/api/v1/detect", response_model=DetectionResult)
-async def detect_audio(request: DetectionRequest):
+async def detect_audio(request: DetectionRequest, api_key: str = Depends(verify_api_key)):
     """AI Voice Detection endpoint"""
     start_time = time.time()
     
