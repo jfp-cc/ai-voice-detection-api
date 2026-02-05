@@ -132,9 +132,11 @@ async def detect_audio(request: DetectionRequest):
         # Classify audio
         if classifier:
             try:
+                print(f"🔍 About to classify with classifier: {type(classifier)}")
                 result = classifier.classify(features)
                 language = classifier.detect_language(features)
                 print(f"✅ Classification successful: {result.label} ({result.confidence:.1%})")
+                print(f"🔍 Model version: {result.model_version}")
             except Exception as e:
                 print(f"❌ Classification error: {e}")
                 import traceback
@@ -142,6 +144,7 @@ async def detect_audio(request: DetectionRequest):
                 # Fallback classification
                 result = _fallback_classification()
                 language = "en"
+                print(f"⚠️ Using fallback classification: {result.label}")
         else:
             print("⚠️ Classifier not available, using fallback")
             # Fallback when classifier not loaded

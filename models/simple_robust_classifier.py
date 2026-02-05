@@ -128,18 +128,26 @@ class SimpleRobustClassifier:
     def classify(self, features: AudioFeatures) -> ClassificationResult:
         """Classify using the simple robust model"""
         try:
+            print(f"🔍 Starting classification with model: {self.cnn_model is not None}")
+            
             if self.cnn_model is None:
+                print("⚠️ CNN model is None, using fallback")
                 # Fallback to simple heuristics
                 return self._fallback_classification(features)
             
+            print(f"🔍 Extracting features for model...")
             # Extract features for the model
             mel_spec = self._extract_features_for_model(features)
+            print(f"🔍 Features extracted, shape: {mel_spec.shape}")
             
             # Prepare input for CNN (add batch and channel dimensions)
             X = mel_spec.reshape(1, self.mel_bins, self.max_time_steps, 1)
+            print(f"🔍 Input prepared, shape: {X.shape}")
             
             # Get prediction (binary classification with sigmoid output)
+            print(f"🔍 Making prediction...")
             prediction_prob = self.cnn_model.predict(X, verbose=0)[0][0]
+            print(f"🔍 Raw prediction probability: {prediction_prob}")
             
             # Apply threshold
             if prediction_prob > self.threshold:
@@ -153,6 +161,8 @@ class SimpleRobustClassifier:
             confidence = max(confidence, 0.5)
             confidence = min(confidence, 0.95)
             
+            print(f"🔍 Final classification: {label} ({confidence:.1%})")
+            
             return ClassificationResult(
                 label=label,
                 confidence=confidence,
@@ -164,6 +174,8 @@ class SimpleRobustClassifier:
             
         except Exception as e:
             print(f"❌ Classification error: {e}")
+            import traceback
+            traceback.print_exc()
             return self._fallback_classification(features)
     
     def _fallback_classification(self, features: AudioFeatures) -> ClassificationResult:
