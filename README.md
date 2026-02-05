@@ -1,38 +1,29 @@
 # AI Voice Detection API
 
-Simple Robust Classifier v1.0 with 90% accuracy for detecting AI-generated vs human voices.
+Simple Robust Classifier v1.0 - 90% accuracy
 
-## Features
-- FastAPI-based REST API
-- Simple Robust CNN model (90% accuracy)
-- Multi-language support (English, Hindi, Tamil, Malayalam, Telugu)
-- Real-time audio classification
+## Deployment on Railway
 
-## Endpoints
-- `GET /` - API information
+This API is deployed on Railway using GitHub integration.
+
+### Endpoints
+
+- `GET /` - Root endpoint with API info
 - `GET /health` - Health check
 - `GET /api/v1/health` - API v1 health check
-- `POST /api/v1/detect` - Audio classification endpoint
+- `POST /api/v1/detect` - AI voice detection endpoint
+- `GET /docs` - FastAPI documentation
 
-## Deployment
-This API is deployed on Railway with automatic scaling and HTTPS.
+### Usage
 
-## Usage
-Send a POST request to `/api/v1/detect` with:
-```json
-{
-  "audio_base64": "base64_encoded_audio_data"
-}
+```bash
+curl -X POST "https://your-app.railway.app/api/v1/detect" \
+  -H "Content-Type: application/json" \
+  -d '{"audio_base64": "your_base64_audio_data"}'
 ```
 
-Returns:
-```json
-{
-  "classification": "ai_generated" | "human",
-  "confidence_score": 0.85,
-  "confidence_level": "high",
-  "explanation": "Audio classified as AI-generated voice...",
-  "language_detected": "en",
-  "processing_time_ms": 250
-}
-```
+### Model Performance
+
+- **Accuracy**: 90% balanced accuracy
+- **Languages**: English, Hindi, Tamil, Malayalam, Telugu
+- **Model**: Simple Robust CNN (64x64 input)

@@ -1,5 +1,5 @@
 """
-AI Voice Detection API for Railway Deployment
+AI Voice Detection API for Railway GitHub Deployment
 Simple Robust Classifier v1.0 - 90% accuracy
 """
 from fastapi import FastAPI, HTTPException
@@ -33,7 +33,7 @@ async def root():
         "status": "running",
         "model": "Simple Robust CNN - 90% accuracy",
         "docs": "/docs",
-        "platform": "Railway"
+        "platform": "Railway via GitHub"
     }
 
 @app.get("/health")

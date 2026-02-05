@@ -2,6 +2,6 @@
 builder = "nixpacks"
 
 [deploy]
-healthcheckPath = "/api/v1/health"
+healthcheckPath = "/health"
 healthcheckTimeout = 300
 startCommand = "python main.py"
