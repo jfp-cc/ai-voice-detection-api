@@ -24,16 +24,26 @@ app = FastAPI(
 
 # API Key Authentication
 API_KEY = "sk-aivoice-2026-prod-7f8e9d2c1b4a6e5f3g8h9i0j1k2l3m4n5o6p7q8r9s0t1u2v3w4x5y6z"
-security = HTTPBearer()
+security = HTTPBearer(auto_error=False)  # Make Bearer token optional
 
-def verify_api_key(credentials: HTTPAuthorizationCredentials = Depends(security)):
-    """Verify API key"""
-    if credentials.credentials != API_KEY:
-        raise HTTPException(
-            status_code=401,
-            detail="Invalid API key"
-        )
-    return credentials.credentials
+def verify_api_key(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    x_api_key: str = Header(None, alias="x-api-key")
+):
+    """Verify API key - supports both Bearer token and x-api-key header"""
+    # Check Bearer token first
+    if credentials and credentials.credentials == API_KEY:
+        return credentials.credentials
+    
+    # Check x-api-key header
+    if x_api_key == API_KEY:
+        return x_api_key
+    
+    # Neither authentication method provided valid key
+    raise HTTPException(
+        status_code=401,
+        detail="Invalid API key"
+    )
 
 # Initialize the classifier
 try:
