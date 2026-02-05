@@ -4,7 +4,8 @@ Simple Robust Classifier v1.0 - 90% accuracy
 """
 from fastapi import FastAPI, HTTPException, Depends, Header
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+from typing import Optional
 import uvicorn
 import os
 import time
@@ -62,7 +63,14 @@ except Exception as e:
     feature_extractor = None
 
 class DetectionRequest(BaseModel):
-    audio_base64: str
+    audio_base64: Optional[str] = None  # Optional snake_case
+    audioBase64: Optional[str] = None   # Optional camelCase from API testers
+    language: Optional[str] = None      # Optional language hint
+    audioFormat: Optional[str] = None   # Optional format hint
+    
+    def get_audio_base64(self):
+        """Get audio base64 from either field name"""
+        return self.audio_base64 or self.audioBase64
 
 class DetectionResult(BaseModel):
     classification: str
@@ -112,9 +120,17 @@ async def detect_audio(request: DetectionRequest, api_key: str = Depends(verify_
     start_time = time.time()
     
     try:
+        # Get audio base64 from either field name
+        audio_base64 = request.get_audio_base64()
+        if not audio_base64:
+            raise HTTPException(
+                status_code=400, 
+                detail="Missing audio data. Provide either 'audio_base64' or 'audioBase64' field."
+            )
+        
         # Decode base64 audio
         try:
-            audio_data = base64.b64decode(request.audio_base64)
+            audio_data = base64.b64decode(audio_base64)
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"Invalid base64 audio data: {e}")
         
