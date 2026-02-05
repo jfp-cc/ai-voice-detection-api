@@ -108,25 +108,41 @@ async def detect_audio(request: DetectionRequest):
                 traceback.print_exc()
                 # Create minimal features as fallback
                 features = AudioFeatures(
-                    mfcc=[0.0] * 13,
-                    spectral_centroid=[2000.0],
-                    spectral_rolloff=[4000.0],
-                    zero_crossing_rate=[0.1],
-                    chroma=[0.5] * 12,
-                    tempo=120.0,
-                    duration=len(audio) / sr
+                    mel_spectrogram=np.zeros((64, 64)),  # 64x64 for simple robust model
+                    mfcc=np.array([[0.0] * 13]),
+                    pitch_contour=np.array([120.0] * 100),
+                    spectral_centroid=np.array([2000.0] * 100),
+                    spectral_rolloff=np.array([4000.0] * 100),
+                    zero_crossing_rate=np.array([0.1] * 100),
+                    prosody_features={
+                        'speaking_rate': 0.1,
+                        'pitch_mean': 120.0,
+                        'pitch_std': 10.0,
+                        'pitch_range': 50.0,
+                        'energy_mean': 0.1,
+                        'energy_std': 0.05
+                    },
+                    duration_seconds=len(audio) / sr
                 )
         else:
             print("⚠️ Feature extractor not available, using fallback")
             # Fallback feature extraction
             features = AudioFeatures(
-                mfcc=[0.0] * 13,
-                spectral_centroid=[2000.0],
-                spectral_rolloff=[4000.0],
-                zero_crossing_rate=[0.1],
-                chroma=[0.5] * 12,
-                tempo=120.0,
-                duration=len(audio) / sr
+                mel_spectrogram=np.zeros((64, 64)),  # 64x64 for simple robust model
+                mfcc=np.array([[0.0] * 13]),
+                pitch_contour=np.array([120.0] * 100),
+                spectral_centroid=np.array([2000.0] * 100),
+                spectral_rolloff=np.array([4000.0] * 100),
+                zero_crossing_rate=np.array([0.1] * 100),
+                prosody_features={
+                    'speaking_rate': 0.1,
+                    'pitch_mean': 120.0,
+                    'pitch_std': 10.0,
+                    'pitch_range': 50.0,
+                    'energy_mean': 0.1,
+                    'energy_std': 0.05
+                },
+                duration_seconds=len(audio) / sr
             )
         
         # Classify audio
