@@ -4,4 +4,4 @@ builder = "nixpacks"
 [deploy]
 healthcheckPath = "/health"
 healthcheckTimeout = 300
-startCommand = "python main.py"
+startCommand = "python start.py"

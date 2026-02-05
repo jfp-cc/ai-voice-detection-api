@@ -41,6 +41,8 @@ RUN pip install --no-cache-dir \
 # Copy application files
 COPY main.py ./
 COPY start.py ./
+COPY models/ ./models/
+COPY features/ ./features/
 
 # Set environment variables
 ENV PYTHONPATH=/app
