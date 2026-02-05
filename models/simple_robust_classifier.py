@@ -100,7 +100,7 @@ class SimpleRobustClassifier:
         mel_spec = np.zeros((self.mel_bins, self.max_time_steps))
         
         # Use MFCC coefficients if available
-        if hasattr(features, 'mfcc') and features.mfcc is not None and len(features.mfcc) > 0:
+        if len(features.mfcc) > 0:
             mfcc_array = np.array(features.mfcc)
             if mfcc_array.ndim == 1:
                 mfcc_array = mfcc_array.reshape(1, -1)
@@ -113,7 +113,7 @@ class SimpleRobustClassifier:
                         mel_spec[j, i] = coeff
         
         # Add spectral information if available
-        if hasattr(features, 'spectral_centroid') and features.spectral_centroid is not None and len(features.spectral_centroid) > 0:
+        if len(features.spectral_centroid) > 0:
             centroid = np.array(features.spectral_centroid)
             for i, cent in enumerate(centroid):
                 if i >= self.max_time_steps:
@@ -190,7 +190,7 @@ class SimpleRobustClassifier:
     def _fallback_classification(self, features: AudioFeatures) -> ClassificationResult:
         """Fallback classification when model is not available"""
         # Simple heuristic based on spectral consistency
-        if hasattr(features, 'spectral_centroid') and features.spectral_centroid is not None and len(features.spectral_centroid) > 0:
+        if len(features.spectral_centroid) > 0:
             centroid_std = np.std(features.spectral_centroid)
             centroid_mean = np.mean(features.spectral_centroid)
             centroid_cv = centroid_std / centroid_mean if centroid_mean > 0 else 0.5
