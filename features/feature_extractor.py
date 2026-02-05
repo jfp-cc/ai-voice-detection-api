@@ -56,11 +56,11 @@ class FeatureExtractor:
             # Calculate duration
             duration = librosa.get_duration(y=y, sr=self.sample_rate)
             
-            # Extract mel-spectrogram
+            # Extract mel-spectrogram (64 bins for simple robust model)
             mel_spec = librosa.feature.melspectrogram(
                 y=y,
                 sr=self.sample_rate,
-                n_mels=128,
+                n_mels=64,  # Changed to 64 for simple robust model
                 n_fft=2048,
                 hop_length=512,
                 fmax=8000

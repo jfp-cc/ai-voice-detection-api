@@ -80,6 +80,8 @@ class SimpleRobustClassifier:
             
         except Exception as e:
             print(f"❌ Error extracting features: {e}")
+            import traceback
+            traceback.print_exc()
             # Return random features as fallback
             return np.random.uniform(0, 1, (self.mel_bins, self.max_time_steps))
     
@@ -88,7 +90,7 @@ class SimpleRobustClassifier:
         mel_spec = np.zeros((self.mel_bins, self.max_time_steps))
         
         # Use MFCC coefficients if available
-        if hasattr(features, 'mfcc') and features.mfcc is not None:
+        if hasattr(features, 'mfcc') and features.mfcc is not None and len(features.mfcc) > 0:
             mfcc_array = np.array(features.mfcc)
             if mfcc_array.ndim == 1:
                 mfcc_array = mfcc_array.reshape(1, -1)
@@ -101,7 +103,7 @@ class SimpleRobustClassifier:
                         mel_spec[j, i] = coeff
         
         # Add spectral information if available
-        if hasattr(features, 'spectral_centroid') and features.spectral_centroid is not None:
+        if hasattr(features, 'spectral_centroid') and features.spectral_centroid is not None and len(features.spectral_centroid) > 0:
             centroid = np.array(features.spectral_centroid)
             for i, cent in enumerate(centroid):
                 if i >= self.max_time_steps:

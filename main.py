@@ -101,8 +101,11 @@ async def detect_audio(request: DetectionRequest):
         if feature_extractor:
             try:
                 features = feature_extractor.extract_features(audio, sr)
+                print(f"✅ Features extracted successfully")
             except Exception as e:
-                print(f"Feature extraction error: {e}")
+                print(f"❌ Feature extraction error: {e}")
+                import traceback
+                traceback.print_exc()
                 # Create minimal features as fallback
                 features = AudioFeatures(
                     mfcc=[0.0] * 13,
@@ -114,6 +117,7 @@ async def detect_audio(request: DetectionRequest):
                     duration=len(audio) / sr
                 )
         else:
+            print("⚠️ Feature extractor not available, using fallback")
             # Fallback feature extraction
             features = AudioFeatures(
                 mfcc=[0.0] * 13,
@@ -130,12 +134,16 @@ async def detect_audio(request: DetectionRequest):
             try:
                 result = classifier.classify(features)
                 language = classifier.detect_language(features)
+                print(f"✅ Classification successful: {result.label} ({result.confidence:.1%})")
             except Exception as e:
-                print(f"Classification error: {e}")
+                print(f"❌ Classification error: {e}")
+                import traceback
+                traceback.print_exc()
                 # Fallback classification
                 result = _fallback_classification()
                 language = "en"
         else:
+            print("⚠️ Classifier not available, using fallback")
             # Fallback when classifier not loaded
             result = _fallback_classification()
             language = "en"
